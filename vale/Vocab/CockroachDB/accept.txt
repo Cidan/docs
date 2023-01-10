@@ -162,7 +162,7 @@ ints
 io
 japaneast
 japanwest
-javascript
+JavaScript
 jdbc
 Jepsen
 johnstown
@@ -320,9 +320,8 @@ schemaless
 scrollable
 scrollbars
 seeked
-selinux
-SELinux
-sequelize
+[sS][eE][lL]inux
+Sequelize
 serializab(ility|le)
 serverless
 servlet
@@ -344,7 +343,7 @@ spammy
 spinny
 Splunk
 SQL
-sqlalchemy
+SQLAlchemy
 sqlx
 src
 SSDs?
