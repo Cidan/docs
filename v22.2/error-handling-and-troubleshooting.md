@@ -99,16 +99,52 @@ To mitigate against this situation while keeping SCRAM authentication enabled, C
 
 #### Downgrade from SCRAM authentication
 
-As an alternative to the [mitigation steps listed above](#mitigation-steps-while-keeping-scram-enabled), you can downgrade from SCRAM authentication by taking the following steps.
+As an alternative to the [mitigation steps listed above](#mitigation-steps-while-keeping-scram-enabled), you can downgrade from SCRAM authentication in one of the following ways:
 
-1. Turn off the `server.user_login.cert_password_method.auto_scram_promotion.enabled` [cluster setting](cluster-settings.html#setting-server-user-login-cert-password-method-auto-scram-promotion-enabled):
+- [Downgrade from the SCRAM protocol while keeping SCRAM password hashes](#downgrade-from-the-scram-protocol-while-keeping-scram-password-hashes)
+- [Downgrade from the SCRAM protocol and change password hashes to bcrypt](#downgrade-from-the-scram-protocol-and-change-password-hashes-to-bcrypt)
+
+##### Downgrade from the SCRAM protocol while keeping SCRAM password hashes
+
+To downgrade from the SCRAM protocol while keeping the existing SCRAM password hashes, set the following [cluster setting](cluster-settings.html).
+
+{% include_cached copy-clipboard.html %}
+~~~ sql
+SET CLUSTER SETTING server.user_login.cert_password_method.auto_scram_promotion.enabled=false
+~~~
+
+If you are still seeing higher connection latencies than before, you can take the additional steps described in [Downgrade from the SCRAM protocol and change password hashes to bcrypt](#downgrade-from-the-scram-protocol-and-change-password-hashes-to-bcrypt).
+
+##### Downgrade from the SCRAM protocol and change password hashes to bcrypt
+
+- [Downgrade from SCRAM using cluster settings only](#downgrade-from-scram-using-cluster-settings-only) (Recommended)
++ [Downgrade from SCRAM using cluster settings and `ALTER USER` statements](#downgrade-from-scram-using-cluster-settings-and-alter-user-statements)
+
+###### Downgrade from SCRAM Using cluster settings only
+
+To downgrade the SCRAM protocol and also change password hashes to [bcrypt](https://en.wikipedia.org/wiki/Bcrypt), set the following [cluster settings](cluster-settings.html):
+
+{% include_cached copy-clipboard.html %}
+~~~ sql
+SET CLUSTER SETTING server.user_login.password_encryption='crdb-bcrypt';
+~~~
+
+{% include_cached copy-clipboard.html %}
+~~~ sql
+SET CLUSTER SETTING server.user_login.downgrade_scram_stored_passwords_to_bcrypt.enabled = true;
+~~~
+
+###### Downgrade from SCRAM using cluster settings and `ALTER USER` statements
+
+1. Set the following [cluster settings](cluster-settings.html):
 
     {% include_cached copy-clipboard.html %}
     ~~~ sql
+    SET CLUSTER SETTING server.user_login.cert_password_method.auto_scram_promotion.enabled = false;
     SET CLUSTER SETTING server.user_login.upgrade_bcrypt_stored_passwords_to_scram.enabled = false;
     ~~~
 
-1. Change the user password encryption algorithm to [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) by setting the [`server.user_login.password_encryption` cluster setting](cluster-settings.html#setting-server-user-login-password-encryption) to `crdb-bcrypt`:
+1. Change the user password encryption algorithm to [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) by setting the following [cluster setting](cluster-settings.html#setting-server-user-login-password-encryption):
 
     {% include_cached copy-clipboard.html %}
     ~~~ sql
