@@ -10,6 +10,10 @@ This page describes newly identified limitations in the CockroachDB {{page.relea
 
 ## New limitations
 
+### `SELECT FOR UPDATE` locks are lost on lease transfers  and range splits/merges
+
+{% include {{page.version.version}}/sql/select-for-update-limitations.md %}
+
 ### Limitations for user-defined functions (UDFs)
 
 #### Limitations on use of UDFs
